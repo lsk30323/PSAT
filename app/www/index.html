@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2937" />
+  <title>PSAT 합격 패키지</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn" aria-label="목차 열기">☰</button>
+    <h1 id="docTitle">PSAT 합격 패키지</h1>
+  </header>
+
+  <div class="layout">
+    <nav id="sidebar" class="sidebar" aria-label="목차"></nav>
+    <div id="backdrop" class="backdrop" hidden></div>
+    <main id="content" class="content">
+      <p class="placeholder">왼쪽 목차에서 학습 자료를 선택하세요.</p>
+    </main>
+  </div>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

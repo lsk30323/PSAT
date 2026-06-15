@@ -1,0 +1,18 @@
+{
+  "name": "psat-pack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PSAT 합격 패키지 학습 앱",
+  "type": "module",
+  "scripts": {
+    "build:content": "node build-content.mjs",
+    "build": "npm run build:content",
+    "sync": "npm run build && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "marked": "^12.0.2"
+  }
+}

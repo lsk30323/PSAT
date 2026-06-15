@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Generated content bundle (rebuilt via `npm run build`)
+www/content/
+
+# Android build outputs
+android/app/build/
+android/build/
+android/.gradle/
+android/captures/
+android/local.properties
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/release/
+
+# Keystores / secrets — never commit
+*.keystore
+*.jks
+keystore.properties
