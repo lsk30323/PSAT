@@ -14,6 +14,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # `secrets` cannot be used in step `if:`, so surface it as an env flag here.
+    env:
+      HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     defaults:
       run:
         working-directory: app
@@ -45,7 +48,7 @@ jobs:
       # Decode the release keystore from a base64-encoded secret, if present.
       # Without it the bundle is built unsigned (for testing the pipeline).
       - name: Decode release keystore
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: env.HAS_KEYSTORE == 'true'
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
 
       # Debug APK — directly installable on your own phone (no signing needed).
