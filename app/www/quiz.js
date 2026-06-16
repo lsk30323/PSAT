@@ -6,7 +6,11 @@
   const CIRCLED = ["①", "②", "③", "④", "⑤"];
   const SUBJECTS = ["전체", "언어논리", "자료해석", "상황판단"];
   const DIFFS = ["전체", "하", "중", "상"];
-  const WRONG_KEY = "psat.wrongIds.v1";
+  // Wrong-answer note is namespaced per signed-in user (guest = "guest").
+  const wrongKey = () => {
+    const u = (window.PSATAuth && PSATAuth.getUser()) || { uid: "guest" };
+    return "psat.wrongIds.v1." + u.uid;
+  };
 
   const $ = (id) => document.getElementById(id);
   const views = { home: $("homeView"), quiz: $("quizView"), result: $("resultView") };
@@ -21,10 +25,10 @@
   let session = null;      // { items:[{q, picked}], idx, instant }
 
   const loadWrong = () => {
-    try { return new Set(JSON.parse(localStorage.getItem(WRONG_KEY) || "[]")); }
+    try { return new Set(JSON.parse(localStorage.getItem(wrongKey()) || "[]")); }
     catch { return new Set(); }
   };
-  const saveWrong = (set) => localStorage.setItem(WRONG_KEY, JSON.stringify([...set]));
+  const saveWrong = (set) => localStorage.setItem(wrongKey(), JSON.stringify([...set]));
 
   // ---- Home -------------------------------------------------------------
   function renderSubjectChips() {

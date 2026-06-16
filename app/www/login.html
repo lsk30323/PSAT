@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2937" />
+  <title>로그인 · PSAT 합격 패키지</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="login.css" />
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="brand">
+        <div class="brand-mark">PSAT</div>
+        <h1>국회직 8급 합격 패키지</h1>
+        <p class="brand-sub">로그인하고 학습을 이어가세요</p>
+      </div>
+
+      <div id="notice" class="notice" hidden></div>
+
+      <button id="googleBtn" class="auth-btn google">
+        <span class="g-icon">G</span> 구글로 계속하기
+      </button>
+
+      <button id="emailToggle" class="auth-btn email">✉️ 이메일로 계속하기</button>
+
+      <form id="emailForm" class="email-form" hidden>
+        <input id="email" type="email" placeholder="이메일" autocomplete="username" />
+        <input id="password" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="current-password" />
+        <div class="email-actions">
+          <button type="submit" id="emailLoginBtn" class="auth-btn primary">로그인</button>
+          <button type="button" id="emailSignupBtn" class="auth-btn ghost">회원가입</button>
+        </div>
+      </form>
+
+      <div class="divider"><span>또는</span></div>
+
+      <button id="guestBtn" class="auth-btn guest">게스트로 둘러보기</button>
+
+      <p id="error" class="error" hidden></p>
+      <p class="fineprint">게스트는 백엔드 없이 이 기기에서만 학습 기록이 저장됩니다.</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var A = window.PSATAuth;
+      var $ = function (id) { return document.getElementById(id); };
+      var errorEl = $("error");
+      function showError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
+      function clearError() { errorEl.hidden = true; }
+      function go() { location.replace("index.html"); }
+
+      // 이미 로그인되어 있으면 바로 진입
+      if (A.getUser()) { go(); return; }
+
+      if (!A.FB_ENABLED) {
+        var n = $("notice");
+        n.hidden = false;
+        n.textContent = "구글·이메일 로그인은 firebase-config.js 설정 후 활성화됩니다. 지금은 게스트로 이용할 수 있어요.";
+        $("googleBtn").disabled = true;
+        $("emailToggle").disabled = true;
+      }
+
+      $("googleBtn").onclick = function () {
+        clearError();
+        $("googleBtn").disabled = true;
+        A.loginGoogle().then(function (u) { if (u) go(); })
+          .catch(function (e) { showError("구글 로그인 실패: " + (e.message || e)); $("googleBtn").disabled = false; });
+      };
+
+      $("emailToggle").onclick = function () {
+        var f = $("emailForm");
+        f.hidden = !f.hidden;
+      };
+
+      function doEmail(isSignup) {
+        clearError();
+        var email = $("email").value.trim();
+        var pw = $("password").value;
+        if (!email || pw.length < 6) { showError("이메일과 6자 이상 비밀번호를 입력하세요."); return; }
+        A.loginEmail(email, pw, isSignup).then(go)
+          .catch(function (e) { showError((isSignup ? "회원가입" : "로그인") + " 실패: " + (e.message || e)); });
+      }
+      $("emailForm").onsubmit = function (e) { e.preventDefault(); doEmail(false); };
+      $("emailSignupBtn").onclick = function () { doEmail(true); };
+
+      $("guestBtn").onclick = function () { A.loginGuest(); go(); };
+    })();
+  </script>
+</body>
+</html>

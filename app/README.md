@@ -7,6 +7,10 @@
 ```
 app/
 ├─ www/                 # 웹앱 (HTML/CSS/JS + 벤더 marked.js)
+│  ├─ login.html        # 로그인 (구글 / 이메일 / 게스트)
+│  ├─ auth.js           # 로그인 게이트 + Firebase 인증 + 게스트
+│  ├─ firebase-config.js# Firebase 설정값 (직접 채움)
+│  ├─ login.css
 │  ├─ index.html        # 학습자료 뷰어 (목차 드로어 + 마크다운)
 │  ├─ app.js / style.css
 │  ├─ quiz.html         # 문제풀이(퀴즈) 화면
@@ -20,6 +24,33 @@ app/
 ├─ capacitor.config.json
 └─ android/             # Capacitor Android 네이티브 프로젝트
 ```
+
+## 로그인 (구글 / 이메일 / 게스트)
+
+앱을 열면 `login.html` 게이트가 먼저 뜹니다.
+- **게스트** — 백엔드 없이 즉시 동작. 학습 기록(오답노트 등)은 이 기기에만 저장됩니다.
+- **구글 / 이메일** — Firebase Authentication을 사용합니다. 아래 설정을 마치면 활성화됩니다.
+
+로그인한 사용자별로 오답노트가 분리 저장되며(`psat.wrongIds.v1.<uid>`), 상단바에
+사용자 이름과 로그아웃 버튼이 표시됩니다.
+
+### Firebase 설정 (구글·이메일 로그인을 켜려면)
+
+1. [Firebase Console](https://console.firebase.google.com) 에서 프로젝트 생성
+2. **Authentication → Sign-in method** 에서 **이메일/비밀번호**와 **Google** 사용 설정
+3. **프로젝트 설정 → 내 앱 → 웹앱 추가** 후 `firebaseConfig` 값을
+   `app/www/firebase-config.js` 에 붙여넣기 (`apiKey` 등)
+4. 승인된 도메인에 앱이 동작하는 출처를 추가 (Capacitor 안드로이드는 보통
+   `localhost`). 웹/PWA로도 쓸 경우 배포 도메인도 추가.
+5. **(안드로이드 네이티브 구글 로그인)** 앱 서명 키의 **SHA-1 지문**을 Firebase에
+   등록하고 `google-services.json` 을 `app/android/app/` 에 두기.
+
+> 구현 메모: 구글 로그인은 Firebase JS SDK의 `signInWithPopup`(실패 시
+> `signInWithRedirect` 폴백)을 사용합니다. 안드로이드 WebView는 임베디드 OAuth를
+> 제한할 수 있어, 프로덕션에서는 네이티브 플러그인
+> `@capacitor-firebase/authentication` 사용을 권장합니다. 이메일/비밀번호와
+> 게스트는 WebView에서도 그대로 동작합니다. `firebase-config.js` 가 비어 있으면
+> 구글·이메일 버튼은 '설정 필요'로 표시되고 게스트만 활성화됩니다.
 
 ## 문제풀이(퀴즈) 기능
 
