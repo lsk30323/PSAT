@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2937" />
+  <title>PSAT 문제풀이</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="quiz.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="quizTitle">PSAT 문제풀이</h1>
+    <a class="topbar-link" href="index.html">📖 학습자료</a>
+  </header>
+
+  <main class="quiz-wrap">
+    <!-- 시작 화면 -->
+    <section id="homeView" class="view">
+      <h2>문제 풀기</h2>
+      <div class="field">
+        <label>과목</label>
+        <div id="subjectChips" class="chips"></div>
+      </div>
+      <div class="field">
+        <label for="typeSelect">유형</label>
+        <select id="typeSelect"><option value="">전체 유형</option></select>
+      </div>
+      <div class="field">
+        <label for="countSelect">문항 수</label>
+        <select id="countSelect">
+          <option value="10">10문항</option>
+          <option value="20" selected>20문항</option>
+          <option value="40">40문항</option>
+          <option value="0">전부</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>옵션</label>
+        <label class="check"><input type="checkbox" id="shuffleChk" checked /> 문제 순서 섞기</label>
+        <label class="check"><input type="checkbox" id="instantChk" /> 즉시 채점(풀면 바로 정답 공개)</label>
+      </div>
+      <p id="poolInfo" class="pool-info"></p>
+      <button id="startBtn" class="btn-primary">시작하기</button>
+
+      <div id="wrongNoteBox" class="wrong-note-box" hidden>
+        <h3>오답노트 <span id="wrongCount" class="badge"></span></h3>
+        <p>이전에 틀린 문제만 다시 풀 수 있어요.</p>
+        <button id="reviewWrongBtn" class="btn-secondary">오답만 다시 풀기</button>
+        <button id="clearWrongBtn" class="btn-text">오답노트 비우기</button>
+      </div>
+    </section>
+
+    <!-- 풀이 화면 -->
+    <section id="quizView" class="view" hidden>
+      <div class="quiz-head">
+        <span id="progress" class="progress"></span>
+        <button id="quitBtn" class="btn-text">그만두기</button>
+      </div>
+      <div class="qmeta"><span id="qSubject" class="tag"></span><span id="qType" class="tag tag-muted"></span></div>
+      <div id="qBody" class="content qbody"></div>
+      <div id="choices" class="choices"></div>
+      <div id="feedback" class="feedback" hidden></div>
+      <div class="quiz-nav">
+        <button id="prevBtn" class="btn-secondary">이전</button>
+        <button id="nextBtn" class="btn-primary">다음</button>
+        <button id="submitBtn" class="btn-primary" hidden>채점하기</button>
+      </div>
+    </section>
+
+    <!-- 결과 화면 -->
+    <section id="resultView" class="view" hidden>
+      <h2>결과</h2>
+      <div id="scoreCard" class="score-card"></div>
+      <div id="reviewList" class="review-list"></div>
+      <div class="result-nav">
+        <button id="retryWrongBtn" class="btn-primary">틀린 문제 다시 풀기</button>
+        <button id="homeBtn" class="btn-secondary">처음으로</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>
