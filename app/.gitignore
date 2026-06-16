@@ -3,6 +3,7 @@ node_modules/
 
 # Generated content bundle (rebuilt via `npm run build`)
 www/content/
+data/generated-questions.json
 
 # Android build outputs
 android/app/build/

@@ -172,24 +172,29 @@ async function parseWorkbook() {
   return questions;
 }
 
-// ---- 3. Hand-authored originals -----------------------------------------
+// ---- 3. Hand-authored + generated originals (all data/*.json) -----------
 async function parseOriginals() {
-  const p = path.join(appDir, "data", "original-questions.json");
-  try {
-    const raw = JSON.parse(await read(p));
-    return (raw.questions || []).map((q, i) => ({
-      id: q.id || `orig-${i + 1}`,
-      subject: q.subject,
-      type: q.type || "오리지널",
-      source: "오리지널",
-      body: q.body,
-      choices: q.choices,
-      answer: q.answer,
-      explanation: q.explanation || "",
-    }));
-  } catch {
-    return [];
+  const dir = path.join(appDir, "data");
+  let files = [];
+  try { files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json")).sort(); } catch { return []; }
+  const out = [];
+  for (const file of files) {
+    let raw;
+    try { raw = JSON.parse(await read(path.join(dir, file))); } catch { continue; }
+    (raw.questions || []).forEach((q, i) => {
+      out.push({
+        id: q.id || `${file.replace(/\.json$/, "")}-${i + 1}`,
+        subject: q.subject,
+        type: q.type || "오리지널",
+        source: q.source || "오리지널",
+        body: q.body,
+        choices: q.choices,
+        answer: q.answer,
+        explanation: q.explanation || "",
+      });
+    });
   }
+  return out;
 }
 
 async function main() {

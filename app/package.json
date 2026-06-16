@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "build:content": "node build-content.mjs",
+    "build:generate": "node generate-questions.mjs",
     "build:questions": "node build-questions.mjs",
-    "build": "npm run build:content && npm run build:questions",
+    "build": "npm run build:generate && npm run build:content && npm run build:questions",
     "sync": "npm run build && npx cap sync android"
   },
   "dependencies": {
