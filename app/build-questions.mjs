@@ -117,6 +117,7 @@ async function parseMock() {
         choices,
         answer: (answers[subj] && answers[subj][num]) || null,
         explanation: (explan[subj] && explan[subj][num]) || "",
+        difficulty: "중",
       });
     }
   }
@@ -166,6 +167,7 @@ async function parseWorkbook() {
         choices,
         answer: ansMap[num] ? ansMap[num].answer : null,
         explanation: ansMap[num] ? ansMap[num].explanation : "",
+        difficulty: "중",
       });
     }
   }
@@ -191,6 +193,7 @@ async function parseOriginals() {
         choices: q.choices,
         answer: q.answer,
         explanation: q.explanation || "",
+        difficulty: q.difficulty || "중",
       });
     });
   }

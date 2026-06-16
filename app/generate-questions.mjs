@@ -166,6 +166,27 @@ const dataTemplates = [
       explanation: `평균 = (${vals.join("+")}) ÷ ${n} = ${sum} ÷ ${n} ≈ ${avgR}점.`,
     };
   },
+  // 가중평균 (집단 크기가 다른 두 평균의 전체 평균)
+  () => {
+    const n1 = pick([20, 25, 30, 40]);
+    const n2 = pick([50, 60, 75, 80]);
+    const a1 = ri(60, 74);
+    const a2 = ri(80, 94);
+    const overall = (n1 * a1 + n2 * a2) / (n1 + n2);
+    const overallR = Math.round(overall * 10) / 10;
+    const simpleMean = Math.round(((a1 + a2) / 2) * 10) / 10;
+    const { choices, answer } = numMcq(
+      overallR,
+      [simpleMean, a1, a2, overallR + 2, overallR - 2.5],
+      (x) => `${x}점`
+    );
+    return {
+      subject: "자료해석", type: "가중평균",
+      body: `A반 ${n1}명의 평균 점수는 ${a1}점, B반 ${n2}명의 평균 점수는 ${a2}점이다.\n\n두 반을 합한 전체 ${n1 + n2}명의 평균 점수는? (소수 둘째 자리에서 반올림)`,
+      choices, answer,
+      explanation: `전체 평균 = (${n1}×${a1} + ${n2}×${a2}) ÷ ${n1 + n2} = ${fmt(n1 * a1 + n2 * a2)} ÷ ${n1 + n2} ≈ ${overallR}점. 두 평균의 단순 평균(${simpleMean}점)이 아니라 인원수로 가중해야 한다.`,
+    };
+  },
 ];
 
 // =========================================================================
@@ -270,6 +291,27 @@ const sitTemplates = [
       explanation: `출생 연도가 빠를수록 나이가 많다. ${sorted.map((p) => `${p}(${births[p]})`).join(" < ")} 순. 따라서 ${kind} 사람은 ${correct}.`,
     };
   },
+  // 정보매칭 (조건 모두 충족하는 사람 찾기)
+  () => {
+    const minAge = pick([19, 20]);
+    const minSteps = pick([10000, 12000]);
+    const minStreak = pick([5, 7]);
+    const desc = (a, s, k) => `만 ${a}세, 월 평균 ${fmt(s)}보, 연속 달성 ${k}일`;
+    const correct = desc(minAge + ri(1, 30), minSteps + ri(500, 3000), minStreak + ri(0, 4));
+    const distractors = [
+      desc(minAge - ri(1, 2), minSteps + ri(500, 2000), minStreak + 2),   // 나이 미달
+      desc(minAge + ri(2, 10), minSteps - ri(500, 2000), minStreak + 1),  // 걸음 미달
+      desc(minAge + ri(2, 10), minSteps + ri(500, 2000), minStreak - ri(1, 3)), // 연속 미달
+      desc(minAge - 2, minSteps - 1000, minStreak - 1),                   // 복합 미달
+    ];
+    const { choices, answer } = mcq(correct, distractors);
+    return {
+      subject: "상황판단", type: "정보매칭",
+      body: `○○시는 걷기 앱 가입자에게 「건강걸음 A등급」을 부여한다. A등급은 아래 세 조건을 **모두** 충족하는 사람에게만 부여한다.\n\n- 만 ${minAge}세 이상\n- 월 평균 걸음 수 ${fmt(minSteps)}보 이상\n- 하루 1만 보 이상을 연속으로 달성한 최장 기록이 ${minStreak}일 이상\n\n다음 중 A등급에 해당하는 사람은?`,
+      choices, answer,
+      explanation: `세 조건(나이 만 ${minAge}세 이상, 걸음 ${fmt(minSteps)}보 이상, 연속 ${minStreak}일 이상)을 모두 만족하는 사람은 '${correct}' 하나뿐이다. 나머지는 한 가지 이상에서 기준에 미달한다.`,
+    };
+  },
 ];
 
 // =========================================================================
@@ -347,7 +389,76 @@ const langTemplates = [
       explanation: `지문은 ${animal}의 서식지가 ${habitat}이라고 명시한다('${correct}'). 나머지는 무리 생활 여부·서식지·식성 등을 지문과 다르게 진술한 것이다.`,
     };
   },
+  // 강화·약화 — 인과 주장에 대한 평가 (무작위 배정 실험이 정답)
+  () => {
+    const cases = [
+      {
+        claim: "규칙적인 걷기 운동은 불면증을 완화한다",
+        rct: "걷기 시간을 무작위로 배정한 별도 실험에서, 걷기를 늘린 집단의 불면증 발생률이 대조군보다 유의하게 낮았다",
+        reverse: "원래 불면 증상이 없어 밤에 잘 자는 사람일수록 낮 동안 더 활발히 걸어 걸음 수가 많았다",
+        confound: "걸음 수가 많은 집단은 평균적으로 침실의 소음·조도 환경이 더 좋았다",
+        irrelevant: "조사 대상 지역의 연평균 기온이 전국 평균보다 높았다",
+        third: "걷기 여부와 무관하게 카페인 섭취량이 많은 사람일수록 불면증 진단 비율이 높았다",
+      },
+      {
+        claim: "독서량을 늘리면 어휘력이 향상된다",
+        rct: "참가자에게 독서량을 무작위로 배정한 실험에서, 독서를 늘린 집단의 어휘 시험 점수가 대조군보다 유의하게 높았다",
+        reverse: "원래 어휘력이 높은 사람일수록 책을 더 쉽고 재미있게 읽어 독서량이 많았다",
+        confound: "독서량이 많은 집단은 부모의 평균 학력이 더 높았다",
+        irrelevant: "조사에 참여한 사람들의 평균 키가 전국 평균과 비슷했다",
+        third: "독서량과 무관하게 수면 시간이 긴 사람일수록 어휘 점수가 높았다",
+      },
+      {
+        claim: "아침 식사를 하면 학업 집중도가 높아진다",
+        rct: "아침 식사 여부를 무작위로 배정한 실험에서, 아침을 먹은 집단의 오전 수업 집중도 점수가 대조군보다 유의하게 높았다",
+        reverse: "원래 집중을 잘하는 규칙적인 학생일수록 아침을 거르지 않고 챙겨 먹는 경향이 있었다",
+        confound: "아침을 먹은 학생들은 평균 수면 시간이 더 길었다",
+        irrelevant: "조사 대상 학교의 운동장 면적이 평균보다 넓었다",
+        third: "아침 식사와 무관하게 사교육 시간이 많은 학생일수록 집중도가 높았다",
+      },
+      {
+        claim: "재택근무를 도입하면 직원의 업무 생산성이 높아진다",
+        rct: "직원을 재택근무 집단과 사무실 근무 집단에 무작위로 배정한 실험에서, 재택 집단의 생산성 지표가 유의하게 높았다",
+        reverse: "원래 성과가 높아 신뢰받는 직원일수록 재택근무를 더 자주 허가받았다",
+        confound: "재택근무를 한 직원들은 평균적으로 더 최신의 업무용 장비를 지급받았다",
+        irrelevant: "조사에 참여한 회사들의 평균 설립 연도가 비슷했다",
+        third: "재택 여부와 무관하게 담당 업무 난이도가 낮은 직원일수록 생산성이 높았다",
+      },
+      {
+        claim: "녹지 공간이 늘어나면 주민의 우울감이 줄어든다",
+        rct: "거주 지역의 소규모 녹지 조성 여부를 무작위로 배정한 실험에서, 녹지가 조성된 지역 주민의 우울 척도 점수가 대조군보다 유의하게 낮았다",
+        reverse: "원래 정서가 안정된 주민일수록 공원이 많은 동네를 골라 이사하는 경향이 있었다",
+        confound: "녹지가 많은 지역은 평균 소득과 의료 접근성이 더 높았다",
+        irrelevant: "조사 대상 도시의 연간 강수량이 전국 평균과 비슷했다",
+        third: "녹지와 무관하게 이웃 교류가 잦은 주민일수록 우울감이 낮았다",
+      },
+      {
+        claim: "수면 시간을 늘리면 기억력 시험 성적이 향상된다",
+        rct: "참가자의 수면 시간을 무작위로 배정한 실험에서, 수면을 늘린 집단의 기억력 시험 성적이 대조군보다 유의하게 높았다",
+        reverse: "원래 기억력이 좋아 공부를 빨리 끝낸 사람일수록 잠을 더 오래 잘 수 있었다",
+        confound: "수면 시간이 긴 집단은 평균적으로 스트레스 수준이 더 낮았다",
+        irrelevant: "조사에 참여한 사람들의 평균 통근 거리가 비슷했다",
+        third: "수면과 무관하게 평소 운동량이 많은 사람일수록 기억력 점수가 높았다",
+      },
+    ];
+    const c = pick(cases);
+    const { choices, answer } = mcq(c.rct, [c.reverse, c.confound, c.irrelevant, c.third]);
+    return {
+      subject: "언어논리", type: "강화약화",
+      body: `연구자 K는 관찰 자료에서 두 변수의 상관관계를 확인한 뒤 "${c.claim}"라고 주장하였다.\n\nK의 논증을 가장 강화하는 것은?`,
+      choices, answer,
+      explanation: `무작위 배정 실험(${"RCT"})은 역인과·교란변수를 통제하므로 인과 주장을 직접 뒷받침한다 → 정답. 역인과(원래 ~한 사람일수록), 교란변수(제3의 공통 원인), 무관한 사실, 다른 원인 제시는 강화하지 못하거나 오히려 약화한다.`,
+    };
+  },
 ];
+
+// ---- difficulty (하/중/상) by subject·type ------------------------------
+const DIFFICULTY = {
+  "자료해석/단순계산": "하", "자료해석/비율증가율": "중", "자료해석/가중평균": "상",
+  "상황판단/수리게임": "하", "상황판단/법조문": "중", "상황판단/논리퍼즐": "중",
+  "상황판단/의사결정": "중", "상황판단/정보매칭": "상",
+  "언어논리/일치부합": "중", "언어논리/논리명제": "상", "언어논리/강화약화": "상",
+};
 
 // ---- assemble -----------------------------------------------------------
 function generate(templates, subjectLabel, n, prefix) {
@@ -366,6 +477,7 @@ function generate(templates, subjectLabel, n, prefix) {
     seenBodies.add(q.body);
     q.id = `${prefix}-${out.length + 1}`;
     q.source = "오리지널(생성)";
+    q.difficulty = DIFFICULTY[`${q.subject}/${q.type}`] || "중";
     out.push(q);
   }
   if (out.length < n) throw new Error(`${subjectLabel}: only generated ${out.length}/${n}`);

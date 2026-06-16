@@ -27,6 +27,10 @@
         <select id="typeSelect"><option value="">전체 유형</option></select>
       </div>
       <div class="field">
+        <label>난이도</label>
+        <div id="diffChips" class="chips"></div>
+      </div>
+      <div class="field">
         <label for="countSelect">문항 수</label>
         <select id="countSelect">
           <option value="10">10문항</option>
@@ -57,7 +61,7 @@
         <span id="progress" class="progress"></span>
         <button id="quitBtn" class="btn-text">그만두기</button>
       </div>
-      <div class="qmeta"><span id="qSubject" class="tag"></span><span id="qType" class="tag tag-muted"></span></div>
+      <div class="qmeta"><span id="qSubject" class="tag"></span><span id="qType" class="tag tag-muted"></span><span id="qDiff" class="tag tag-diff"></span></div>
       <div id="qBody" class="content qbody"></div>
       <div id="choices" class="choices"></div>
       <div id="feedback" class="feedback" hidden></div>

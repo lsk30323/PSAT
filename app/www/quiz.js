@@ -5,6 +5,7 @@
 
   const CIRCLED = ["①", "②", "③", "④", "⑤"];
   const SUBJECTS = ["전체", "언어논리", "자료해석", "상황판단"];
+  const DIFFS = ["전체", "하", "중", "상"];
   const WRONG_KEY = "psat.wrongIds.v1";
 
   const $ = (id) => document.getElementById(id);
@@ -16,6 +17,7 @@
 
   let bank = [];           // all questions
   let subject = "전체";
+  let diff = "전체";
   let session = null;      // { items:[{q, picked}], idx, instant }
 
   const loadWrong = () => {
@@ -37,8 +39,22 @@
     });
   }
 
+  function renderDiffChips() {
+    const box = $("diffChips");
+    box.innerHTML = "";
+    DIFFS.forEach((d) => {
+      const b = document.createElement("button");
+      b.className = "chip" + (d === diff ? " active" : "");
+      b.textContent = d;
+      b.onclick = () => { diff = d; renderDiffChips(); updatePool(); };
+      box.appendChild(b);
+    });
+  }
+
   function filtered() {
-    return bank.filter((q) => subject === "전체" || q.subject === subject);
+    return bank.filter((q) =>
+      (subject === "전체" || q.subject === subject) &&
+      (diff === "전체" || q.difficulty === diff));
   }
 
   function renderTypes() {
@@ -96,6 +112,8 @@
     $("progress").textContent = `${idx + 1} / ${items.length}`;
     $("qSubject").textContent = q.subject;
     $("qType").textContent = q.type;
+    $("qDiff").textContent = q.difficulty ? `난이도 ${q.difficulty}` : "";
+    $("qDiff").className = "tag tag-diff diff-" + (q.difficulty || "중");
     $("qBody").innerHTML = marked.parse(q.body || "");
 
     const answered = item.picked !== null;
@@ -173,7 +191,7 @@
       div.className = "review-item";
       const pickedTxt = picked ? `${CIRCLED[picked - 1]} ${q.choices[picked - 1]}` : "무응답";
       div.innerHTML =
-        `<div class="r-head">${q.subject} · ${q.type}</div>` +
+        `<div class="r-head">${q.subject} · ${q.type} · 난이도 ${q.difficulty || "중"}</div>` +
         `<div class="r-body">${marked.parse(q.body || "")}</div>` +
         `<div class="r-ans">내 답: <span class="no">${escapeHtml(pickedTxt)}</span> · ` +
         `정답: <span class="ok">${CIRCLED[q.answer - 1]} ${escapeHtml(q.choices[q.answer - 1])}</span></div>` +
@@ -212,6 +230,7 @@
   function goHome() {
     session = null;
     renderSubjectChips();
+    renderDiffChips();
     renderTypes();
     updatePool();
     renderWrongBox();

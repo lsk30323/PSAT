@@ -92,6 +92,9 @@ select {
   margin-right: 6px;
 }
 .tag-muted { background: #f3f4f6; color: var(--muted); }
+.tag-diff.diff-하 { background: #ecfdf5; color: #15803d; }
+.tag-diff.diff-중 { background: #fffbeb; color: #b45309; }
+.tag-diff.diff-상 { background: #fef2f2; color: #b91c1c; }
 .qbody { padding: 0; margin-bottom: 16px; max-width: none; }
 
 .choices { display: flex; flex-direction: column; gap: 10px; }
